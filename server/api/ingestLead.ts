@@ -7,7 +7,7 @@ import { sendLeadPush } from "../src/pushService";
 import { countNewLeads } from "../src/leadCounts";
 
 const MAX_FIELD_LEN = 500;
-const DEDUP_WINDOW_SECONDS = 60;
+const DEDUP_WINDOW_SECONDS = 15;
 
 function asString(value: unknown, maxLen = MAX_FIELD_LEN): string | undefined {
   if (typeof value !== "string") return undefined;
