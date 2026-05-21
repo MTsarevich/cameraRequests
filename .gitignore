@@ -1,0 +1,33 @@
+# macOS
+.DS_Store
+
+# Xcode
+build/
+DerivedData/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+xcuserdata/
+*.xcuserstate
+*.swiftpm/
+
+# Firebase (downloaded per-environment)
+cameraRequests/GoogleService-Info.plist
+
+# Node / server
+server/node_modules/
+server/*.log
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+
+# Vercel
+.vercel/
+
+# Firebase service account — never commit
+serviceAccount*.json
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.local

@@ -1,0 +1,25 @@
+{
+  "name": "camerarequests-server",
+  "description": "Lead-intake backend for the cameraRequests iOS app (Vercel serverless functions)",
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc",
+    "test": "jest"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.6.0",
+    "luxon": "^3.5.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.13",
+    "@types/luxon": "^3.4.2",
+    "@types/node": "^20.16.10",
+    "@vercel/node": "^3.2.24",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.6.2"
+  }
+}
