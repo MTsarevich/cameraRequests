@@ -15,5 +15,7 @@ struct RootView: View {
                 SignInView()
             }
         }
+        .preferredColorScheme(.light)
+        .tint(Theme.brand)
     }
 }

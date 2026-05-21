@@ -26,6 +26,13 @@ final class PushService {
         }
     }
 
+    // Sets the app icon badge to the count of unhandled (new) leads.
+    func setBadge(_ count: Int) {
+        UNUserNotificationCenter.current().setBadgeCount(max(0, count)) { error in
+            if let error { print("[PushService] setBadge error:", error) }
+        }
+    }
+
     // Persist a new FCM token in the current user's fcmTokens array (idempotent).
     func registerToken(_ token: String) async {
         currentToken = token

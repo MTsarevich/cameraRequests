@@ -37,14 +37,15 @@ struct LeadDetailSheet: View {
                             Text(message)
                         }
                     }
-                    if let pageUrl = lead.pageUrl, !pageUrl.isEmpty {
-                        infoRow("Страница", pageUrl)
-                    }
                     infoRow("Источник", lead.source)
                     if let createdAt = lead.createdAt {
                         infoRow("Создана", formatted(createdAt))
                     }
-                    infoRow("Статус", lead.status.shortLabel)
+                    HStack {
+                        Text("Статус").foregroundStyle(.secondary)
+                        Spacer()
+                        StatusBadge(status: lead.status)
+                    }
                 }
 
                 if hasContact {
@@ -105,6 +106,8 @@ struct LeadDetailSheet: View {
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Theme.background)
             .navigationTitle("Заявка")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

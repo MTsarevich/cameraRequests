@@ -3,6 +3,7 @@ import * as admin from "firebase-admin";
 import { db, messaging } from "../../src/firebase";
 import { selectPushTargets } from "../../src/userFilter";
 import { sendLeadPush } from "../../src/pushService";
+import { countNewLeads } from "../../src/leadCounts";
 import { LeadDoc } from "../../src/types";
 
 export const config = { maxDuration: 30 };
@@ -72,6 +73,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     }
 
     const targets = await selectPushTargets(firestore, "reminder", now);
+    const badge = await countNewLeads(firestore);
     let pushed = 0;
 
     for (const doc of due) {
@@ -90,6 +92,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
             leadId: doc.id,
             title: "Заявка ждёт ответа",
             body: formatBody(lead),
+            badge,
           });
           pushed += 1;
         } catch (err) {

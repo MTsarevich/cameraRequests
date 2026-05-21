@@ -7,10 +7,13 @@ struct LeadsListView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                statusPicker
-                Divider()
-                listContent
+            ZStack {
+                Theme.background.ignoresSafeArea()
+
+                VStack(spacing: 0) {
+                    statusPicker
+                    listContent
+                }
             }
             .navigationTitle("Заявки")
             .navigationBarTitleDisplayMode(.inline)
@@ -19,7 +22,8 @@ struct LeadsListView: View {
                     NavigationLink {
                         SettingsView()
                     } label: {
-                        Image(systemName: "gearshape")
+                        Image(systemName: "gearshape.fill")
+                            .foregroundStyle(Theme.brand)
                     }
                 }
             }
@@ -35,8 +39,6 @@ struct LeadsListView: View {
                 openIfPending(newId)
             }
             .onChange(of: vm.allLeads) { _, _ in
-                // If a push arrived before the snapshot loaded, the lead wasn't in the list yet.
-                // Re-attempt the deep link whenever the list updates.
                 openIfPending(router.pendingLeadId)
             }
         }
@@ -51,8 +53,8 @@ struct LeadsListView: View {
             }
         }
         .pickerStyle(.segmented)
-        .padding(.horizontal)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
     }
 
     @ViewBuilder
@@ -63,30 +65,38 @@ struct LeadsListView: View {
         } else {
             List(leads) { lead in
                 LeadRow(lead: lead)
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets(top: 5, leading: 16, bottom: 5, trailing: 16))
                     .contentShape(Rectangle())
                     .onTapGesture { presentedLead = lead }
             }
             .listStyle(.plain)
+            .scrollContentBackground(.hidden)
         }
     }
 
     @ViewBuilder
     private var emptyState: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 10) {
             Spacer()
             Image(systemName: "tray")
-                .font(.largeTitle)
-                .foregroundStyle(.secondary)
+                .font(.system(size: 44))
+                .foregroundStyle(Theme.textSecondary.opacity(0.5))
             Text(vm.searchText.isEmpty ? "Нет заявок" : "Ничего не найдено")
-                .foregroundStyle(.secondary)
+                .font(.subheadline)
+                .foregroundStyle(Theme.textSecondary)
             Spacer()
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private func startListening() {
         LeadsRepository.shared.startListening { leads in
             vm.ingest(leads)
+            // Keep the home-screen badge in sync with unhandled (new) leads.
+            let newCount = leads.filter { $0.status == .new }.count
+            PushService.shared.setBadge(newCount)
         }
     }
 
@@ -103,46 +113,43 @@ private struct LeadRow: View {
     let lead: Lead
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Circle()
-                .fill(color)
-                .frame(width: 10, height: 10)
-                .padding(.top, 6)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                StatusBadge(status: lead.status)
+                Spacer()
+                if let createdAt = lead.createdAt {
+                    Text(relative(createdAt))
+                        .font(.caption)
+                        .foregroundStyle(Theme.textSecondary)
+                }
+            }
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(lead.name.isEmpty ? "Без имени" : lead.name)
-                    .font(.body)
-                    .fontWeight(.medium)
-                if !lead.phone.isEmpty {
+            Text(lead.name.isEmpty ? "Без имени" : lead.name)
+                .font(.headline)
+                .foregroundStyle(Theme.textPrimary)
+
+            if !lead.phone.isEmpty {
+                HStack(spacing: 6) {
+                    Image(systemName: "phone.fill")
+                        .font(.caption2)
+                        .foregroundStyle(Theme.brand)
                     Text(PhoneFormatter.display(lead.phone))
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                if let message = lead.message, !message.isEmpty {
-                    Text(message)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                        .foregroundStyle(Theme.textSecondary)
                 }
             }
 
-            Spacer()
-
-            if let createdAt = lead.createdAt {
-                Text(relative(createdAt))
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
+            if let message = lead.message, !message.isEmpty {
+                Text(message)
+                    .font(.footnote)
+                    .foregroundStyle(Theme.textSecondary)
+                    .lineLimit(1)
             }
         }
-        .padding(.vertical, 4)
-    }
-
-    private var color: Color {
-        switch lead.status {
-        case .new: return .red
-        case .inProgress: return .orange
-        case .closed: return .gray
-        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: Theme.cardRadius))
+        .shadow(color: .black.opacity(0.05), radius: 6, y: 2)
     }
 
     private func relative(_ date: Date) -> String {

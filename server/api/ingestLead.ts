@@ -4,6 +4,7 @@ import { db, messaging } from "../src/firebase";
 import { normalizePhone } from "../src/phone";
 import { selectPushTargets } from "../src/userFilter";
 import { sendLeadPush } from "../src/pushService";
+import { countNewLeads } from "../src/leadCounts";
 
 const MAX_FIELD_LEN = 500;
 const DEDUP_WINDOW_SECONDS = 60;
@@ -111,10 +112,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     try {
       const targets = await selectPushTargets(firestore, "newLead", new Date());
       if (targets.length > 0) {
+        const badge = await countNewLeads(firestore);
         const result = await sendLeadPush(firestore, messaging(), targets, {
           leadId: docRef.id,
           title: "Новая заявка",
           body: formatBody(name, phone),
+          badge,
         });
         console.info("[ingestLead] push sent", docRef.id, result);
       } else {

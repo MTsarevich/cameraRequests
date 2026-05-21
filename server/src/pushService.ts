@@ -5,6 +5,7 @@ export interface LeadNotification {
   leadId: string;
   title: string;
   body: string;
+  badge: number;
 }
 
 // Sends the same notification to every target, customising sound per user.
@@ -33,7 +34,7 @@ export async function sendLeadPush(
           payload: {
             aps: {
               sound: target.soundEnabled ? "default" : undefined,
-              badge: 1,
+              badge: notification.badge,
               "content-available": 1,
             },
           },
