@@ -1,0 +1,34 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    match /leads/{leadId} {
+      // Any signed-in team member can read. Manual user-doc existence check
+      // was removed to avoid a chicken-and-egg on first login (the user doc
+      // is created lazily when FCM registers the token).
+      allow read: if isSignedIn();
+
+      // Lead creation never happens from the client — only via Cloud Function
+      // (ingestLead) with admin credentials, which bypasses these rules.
+      allow create: if false;
+
+      // Client may update only status / updatedAt / assignedTo. Reminder
+      // bookkeeping (lastRemindedAt, reminderCount) is server-only.
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['status', 'updatedAt', 'assignedTo']);
+
+      allow delete: if false;
+    }
+
+    match /users/{uid} {
+      // Each user reads & writes only their own profile (fcm tokens, settings).
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    }
+  }
+}

@@ -1,24 +1,19 @@
-//
-//  ContentView.swift
-//  cameraRequests
-//
-//  Created by Maksim Tsarevich on 20.05.2026.
-//
-
 import SwiftUI
 
-struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
-    }
-}
+struct RootView: View {
+    @Environment(AuthService.self) private var auth
 
-#Preview {
-    ContentView()
+    var body: some View {
+        Group {
+            if auth.isSignedIn {
+                LeadsListView()
+                    .task {
+                        await PushService.shared.requestAuthorization()
+                        await PushService.shared.refreshTokenIfNeeded()
+                    }
+            } else {
+                SignInView()
+            }
+        }
+    }
 }

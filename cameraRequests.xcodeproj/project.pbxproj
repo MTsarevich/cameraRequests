@@ -6,13 +6,37 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1C91092B2FBE5C82009D3A58 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 1C91092A2FBE5C82009D3A58 /* FirebaseAuth */; };
+		1C91092D2FBE5C82009D3A58 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1C91092C2FBE5C82009D3A58 /* FirebaseCore */; };
+		1C91092F2FBE5C82009D3A58 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 1C91092E2FBE5C82009D3A58 /* FirebaseDatabase */; };
+		1C9109312FBE5C82009D3A58 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 1C9109302FBE5C82009D3A58 /* FirebaseFirestore */; };
+		1C9109332FBE5C82009D3A58 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 1C9109322FBE5C82009D3A58 /* FirebaseFunctions */; };
+		1C9109352FBE5C82009D3A58 /* FirebaseInAppMessaging-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 1C9109342FBE5C82009D3A58 /* FirebaseInAppMessaging-Beta */; };
+		1C9109372FBE5C82009D3A58 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 1C9109362FBE5C82009D3A58 /* FirebaseMessaging */; };
+		1C9109392FBE5C82009D3A58 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 1C9109382FBE5C82009D3A58 /* FirebaseRemoteConfig */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		1C9108F52FBE503B009D3A58 /* cameraRequests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cameraRequests.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		1C91093D2FBE5F28009D3A58 /* Exceptions for "cameraRequests" folder in "cameraRequests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 1C9108F42FBE503B009D3A58 /* cameraRequests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		1C9108F72FBE503B009D3A58 /* cameraRequests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				1C91093D2FBE5F28009D3A58 /* Exceptions for "cameraRequests" folder in "cameraRequests" target */,
+			);
 			path = cameraRequests;
 			sourceTree = "<group>";
 		};
@@ -23,6 +47,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C91092F2FBE5C82009D3A58 /* FirebaseDatabase in Frameworks */,
+				1C9109312FBE5C82009D3A58 /* FirebaseFirestore in Frameworks */,
+				1C9109372FBE5C82009D3A58 /* FirebaseMessaging in Frameworks */,
+				1C9109332FBE5C82009D3A58 /* FirebaseFunctions in Frameworks */,
+				1C91092D2FBE5C82009D3A58 /* FirebaseCore in Frameworks */,
+				1C91092B2FBE5C82009D3A58 /* FirebaseAuth in Frameworks */,
+				1C9109352FBE5C82009D3A58 /* FirebaseInAppMessaging-Beta in Frameworks */,
+				1C9109392FBE5C82009D3A58 /* FirebaseRemoteConfig in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +97,14 @@
 			);
 			name = cameraRequests;
 			packageProductDependencies = (
+				1C91092A2FBE5C82009D3A58 /* FirebaseAuth */,
+				1C91092C2FBE5C82009D3A58 /* FirebaseCore */,
+				1C91092E2FBE5C82009D3A58 /* FirebaseDatabase */,
+				1C9109302FBE5C82009D3A58 /* FirebaseFirestore */,
+				1C9109322FBE5C82009D3A58 /* FirebaseFunctions */,
+				1C9109342FBE5C82009D3A58 /* FirebaseInAppMessaging-Beta */,
+				1C9109362FBE5C82009D3A58 /* FirebaseMessaging */,
+				1C9109382FBE5C82009D3A58 /* FirebaseRemoteConfig */,
 			);
 			productName = cameraRequests;
 			productReference = 1C9108F52FBE503B009D3A58 /* cameraRequests.app */;
@@ -94,6 +134,9 @@
 			);
 			mainGroup = 1C9108EC2FBE503B009D3A58;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1C9109292FBE5C82009D3A58 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1C9108F62FBE503B009D3A58 /* Products */;
 			projectDirPath = "";
@@ -251,13 +294,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = cameraRequests/cameraRequests.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = SAGPQYZQX3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = cameraRequests/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIBackgroundModes = "remote-notification";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -269,6 +315,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.cameraRequests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -283,13 +333,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = cameraRequests/cameraRequests.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = SAGPQYZQX3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = cameraRequests/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIBackgroundModes = "remote-notification";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -301,6 +354,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.cameraRequests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -332,6 +389,60 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1C9109292FBE5C82009D3A58 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.13.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1C91092A2FBE5C82009D3A58 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1C9109292FBE5C82009D3A58 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		1C91092C2FBE5C82009D3A58 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1C9109292FBE5C82009D3A58 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		1C91092E2FBE5C82009D3A58 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1C9109292FBE5C82009D3A58 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		1C9109302FBE5C82009D3A58 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1C9109292FBE5C82009D3A58 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		1C9109322FBE5C82009D3A58 /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1C9109292FBE5C82009D3A58 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
+		};
+		1C9109342FBE5C82009D3A58 /* FirebaseInAppMessaging-Beta */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1C9109292FBE5C82009D3A58 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseInAppMessaging-Beta";
+		};
+		1C9109362FBE5C82009D3A58 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1C9109292FBE5C82009D3A58 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		1C9109382FBE5C82009D3A58 /* FirebaseRemoteConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1C9109292FBE5C82009D3A58 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfig;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1C9108ED2FBE503B009D3A58 /* Project object */;
 }

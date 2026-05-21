@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Оставить заявку</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f2f3f5;
+      color: #1c1c1e;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+      width: 100%;
+      max-width: 380px;
+      padding: 28px 24px;
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #8e8e93;
+      margin-bottom: 22px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin: 14px 0 6px;
+      color: #3a3a3c;
+    }
+    input {
+      width: 100%;
+      padding: 13px 14px;
+      font-size: 16px;
+      border: 1px solid #d1d1d6;
+      border-radius: 12px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input:focus { border-color: #007aff; }
+    button {
+      width: 100%;
+      margin-top: 22px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      background: #007aff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    button:disabled { opacity: 0.5; cursor: default; }
+    .status {
+      margin-top: 16px;
+      font-size: 14px;
+      text-align: center;
+      min-height: 20px;
+    }
+    .status.ok { color: #34c759; }
+    .status.err { color: #ff3b30; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Оставить заявку</h1>
+    <p class="subtitle">Заполните форму — мы свяжемся с вами</p>
+
+    <form id="leadForm" novalidate>
+      <label for="fullName">Имя и фамилия</label>
+      <input id="fullName" name="fullName" type="text" autocomplete="name"
+             placeholder="Иван Петров" required />
+
+      <label for="phone">Телефон</label>
+      <input id="phone" name="phone" type="tel" inputmode="tel"
+             autocomplete="tel" placeholder="+375 29 123-45-67" required />
+
+      <button type="submit" id="submitBtn">Отправить</button>
+      <div class="status" id="status"></div>
+    </form>
+  </div>
+
+  <script>
+    // ============================================================
+    // НАСТРОЙКА — замени два значения ниже на свои.
+    // ============================================================
+    const CONFIG = {
+      // URL твоего Render-сервиса + /ingestLead
+      ENDPOINT: "https://camerarequests-server.onrender.com/ingestLead",
+
+      // Тот же INGEST_SECRET, что задан в Render → Environment.
+      // Да, он виден в коде страницы — это нормально: защита от
+      // случайного спама, не от целевой атаки.
+      INGEST_SECRET: "ЗАМЕНИ_НА_СВОЙ_INGEST_SECRET",
+    };
+    // ============================================================
+
+    const form = document.getElementById("leadForm");
+    const btn = document.getElementById("submitBtn");
+    const statusEl = document.getElementById("status");
+    const phoneInput = document.getElementById("phone");
+
+    function setStatus(text, kind) {
+      statusEl.textContent = text;
+      statusEl.className = "status" + (kind ? " " + kind : "");
+    }
+
+    // Belarusian phone: +375 XX XXX-XX-XX (2-digit operator code + 7 digits).
+    function formatBelarusPhone(raw) {
+      let d = raw.replace(/\D/g, "");
+      if (d.startsWith("375")) d = d.slice(3);
+      else if (d.startsWith("80")) d = d.slice(2);
+      else if (d.startsWith("0")) d = d.slice(1);
+      d = d.slice(0, 9);
+      let out = "+375";
+      if (d.length > 0) out += " " + d.slice(0, 2);
+      if (d.length > 2) out += " " + d.slice(2, 5);
+      if (d.length > 5) out += "-" + d.slice(5, 7);
+      if (d.length > 7) out += "-" + d.slice(7, 9);
+      return out;
+    }
+
+    phoneInput.addEventListener("focus", () => {
+      if (!phoneInput.value) phoneInput.value = "+375 ";
+    });
+    phoneInput.addEventListener("input", () => {
+      phoneInput.value = formatBelarusPhone(phoneInput.value);
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const fullName = document.getElementById("fullName").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+
+      if (!fullName) {
+        setStatus("Укажите имя и фамилию", "err");
+        return;
+      }
+      const phoneDigits = phone.replace(/\D/g, "");
+      if (phoneDigits.length !== 12 || !phoneDigits.startsWith("375")) {
+        setStatus("Телефон в формате +375 XX XXX-XX-XX", "err");
+        return;
+      }
+
+      btn.disabled = true;
+      setStatus("Отправляем…");
+
+      try {
+        const res = await fetch(CONFIG.ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Ingest-Secret": CONFIG.INGEST_SECRET,
+          },
+          body: JSON.stringify({
+            name: fullName,
+            phone: phone,
+            pageUrl: location.href,
+            source: "website",
+          }),
+        });
+
+        if (res.ok) {
+          setStatus("Заявка отправлена. Спасибо!", "ok");
+          form.reset();
+        } else {
+          const data = await res.json().catch(() => ({}));
+          setStatus("Ошибка: " + (data.error || res.status), "err");
+        }
+      } catch (err) {
+        setStatus("Не удалось отправить. Проверьте соединение.", "err");
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
