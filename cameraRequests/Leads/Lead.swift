@@ -5,6 +5,7 @@ struct Lead: Identifiable, Codable, Equatable {
     @DocumentID var id: String?
     var name: String
     var phone: String
+    var email: String?
     var message: String?
     var source: String
     var pageUrl: String?
@@ -17,7 +18,7 @@ struct Lead: Identifiable, Codable, Equatable {
 
     // Used by the client-side search filter. Concatenates every text field a user might type.
     var searchableHaystack: String {
-        [name, phone, message ?? "", pageUrl ?? "", source]
+        [name, phone, email ?? "", message ?? "", pageUrl ?? "", source]
             .joined(separator: " ")
             .lowercased()
     }
@@ -26,6 +27,7 @@ struct Lead: Identifiable, Codable, Equatable {
         lhs.id == rhs.id
             && lhs.name == rhs.name
             && lhs.phone == rhs.phone
+            && lhs.email == rhs.email
             && lhs.message == rhs.message
             && lhs.status == rhs.status
             && lhs.createdAt == rhs.createdAt

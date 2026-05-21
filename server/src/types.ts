@@ -32,6 +32,7 @@ export interface UserDoc {
 export interface LeadDoc {
   name: string;
   phone: string;
+  email?: string;
   message?: string;
   source: string;
   pageUrl?: string;

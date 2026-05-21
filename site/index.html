@@ -98,13 +98,13 @@
     // НАСТРОЙКА — замени два значения ниже на свои.
     // ============================================================
     const CONFIG = {
-      // URL твоего Render-сервиса + /ingestLead
-      ENDPOINT: "https://camerarequests-server.onrender.com/ingestLead",
+      // Vercel-эндпоинт приёма заявок.
+      ENDPOINT: "https://camera-requests.vercel.app/api/ingestLead",
 
-      // Тот же INGEST_SECRET, что задан в Render → Environment.
+      // Тот же INGEST_SECRET, что задан в Vercel → Settings → Environment Variables.
       // Да, он виден в коде страницы — это нормально: защита от
       // случайного спама, не от целевой атаки.
-      INGEST_SECRET: "ЗАМЕНИ_НА_СВОЙ_INGEST_SECRET",
+      INGEST_SECRET: "e99035e9a248526737e5ccc8ccf59a5c",
     };
     // ============================================================
 

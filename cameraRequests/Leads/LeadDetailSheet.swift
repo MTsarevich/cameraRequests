@@ -28,6 +28,9 @@ struct LeadDetailSheet: View {
                     if !lead.phone.isEmpty {
                         infoRow("Телефон", PhoneFormatter.display(lead.phone))
                     }
+                    if let email = lead.email, !email.isEmpty {
+                        infoRow("Email", email)
+                    }
                     if let message = lead.message, !message.isEmpty {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Комментарий").font(.caption).foregroundStyle(.secondary)
@@ -44,22 +47,36 @@ struct LeadDetailSheet: View {
                     infoRow("Статус", lead.status.shortLabel)
                 }
 
-                if !lead.phone.isEmpty {
+                if hasContact {
                     Section("Контакт") {
-                        Button {
-                            ContactActions.call(phone: lead.phone)
-                        } label: {
-                            Label("Позвонить", systemImage: "phone.fill")
+                        if !lead.phone.isEmpty {
+                            Button {
+                                ContactActions.call(phone: lead.phone)
+                            } label: {
+                                Label("Позвонить", systemImage: "phone.fill")
+                            }
+                            Button {
+                                ContactActions.openTelegram(phone: lead.phone)
+                            } label: {
+                                Label("Telegram", systemImage: "paperplane.fill")
+                            }
+                            Button {
+                                ContactActions.copy(lead.phone)
+                            } label: {
+                                Label("Скопировать телефон", systemImage: "doc.on.doc")
+                            }
                         }
-                        Button {
-                            ContactActions.openTelegram(phone: lead.phone)
-                        } label: {
-                            Label("Telegram", systemImage: "paperplane.fill")
-                        }
-                        Button {
-                            ContactActions.copy(lead.phone)
-                        } label: {
-                            Label("Скопировать телефон", systemImage: "doc.on.doc")
+                        if let email = lead.email, !email.isEmpty {
+                            Button {
+                                ContactActions.openEmail(email)
+                            } label: {
+                                Label("Написать на email", systemImage: "envelope.fill")
+                            }
+                            Button {
+                                ContactActions.copy(email)
+                            } label: {
+                                Label("Скопировать email", systemImage: "doc.on.doc")
+                            }
                         }
                     }
                 }
@@ -121,6 +138,10 @@ struct LeadDetailSheet: View {
     }
 
     // MARK: - Subviews
+
+    private var hasContact: Bool {
+        !lead.phone.isEmpty || (lead.email?.isEmpty == false)
+    }
 
     private func infoRow(_ title: String, _ value: String) -> some View {
         HStack(alignment: .top) {

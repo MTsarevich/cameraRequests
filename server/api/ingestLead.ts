@@ -52,6 +52,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
   const name = asString(body.name) ?? "";
   const rawPhone = asString(body.phone) ?? "";
   const phone = rawPhone ? normalizePhone(rawPhone) : "";
+  const email = asString(body.email);
   const message = asString(body.message);
   const pageUrl = asString(body.pageUrl);
   const source = asString(body.source) ?? "website";
@@ -92,6 +93,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     await docRef.set({
       name,
       phone,
+      email: email ?? null,
       message: message ?? null,
       pageUrl: pageUrl ?? null,
       source,

@@ -19,6 +19,14 @@ enum ContactActions {
         return openIfPossible(url)
     }
 
+    @discardableResult
+    static func openEmail(_ address: String) -> Bool {
+        let trimmed = address.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty,
+              let url = URL(string: "mailto:\(trimmed)") else { return false }
+        return openIfPossible(url)
+    }
+
     static func copy(_ text: String) {
         UIPasteboard.general.string = text
     }
