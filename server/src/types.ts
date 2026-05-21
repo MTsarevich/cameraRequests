@@ -40,6 +40,7 @@ export interface LeadDoc {
   createdAt: firestore.Timestamp;
   updatedAt: firestore.Timestamp;
   assignedTo?: string;
+  assignedToName?: string;
   lastRemindedAt?: firestore.Timestamp | null;
   reminderCount: number;
   rawPayload: Record<string, unknown>;

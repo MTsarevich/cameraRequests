@@ -13,17 +13,23 @@ service cloud.firestore {
       // is created lazily when FCM registers the token).
       allow read: if isSignedIn();
 
-      // Lead creation never happens from the client — only via Cloud Function
+      // Lead creation never happens from the client — only via the backend
       // (ingestLead) with admin credentials, which bypasses these rules.
       allow create: if false;
 
-      // Client may update only status / updatedAt / assignedTo. Reminder
+      // Client may update only status / assignment fields. Reminder
       // bookkeeping (lastRemindedAt, reminderCount) is server-only.
       allow update: if isSignedIn()
         && request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['status', 'updatedAt', 'assignedTo']);
+            .hasOnly(['status', 'updatedAt', 'assignedTo', 'assignedToName']);
 
       allow delete: if false;
+
+      // Internal team notes — append-only history.
+      match /notes/{noteId} {
+        allow read, create: if isSignedIn();
+        allow update, delete: if false;
+      }
     }
 
     match /users/{uid} {

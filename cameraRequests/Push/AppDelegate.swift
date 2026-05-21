@@ -12,6 +12,12 @@ final class DeepLinkRouter: ObservableObject {
     private init() {}
 }
 
+// Notification category / action identifiers for the "take in progress" push button.
+enum PushAction {
+    static let category = "NEW_LEAD"
+    static let takeInProgress = "TAKE_IN_PROGRESS"
+}
+
 final class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNotificationCenterDelegate {
 
     func application(_ application: UIApplication,
@@ -21,9 +27,27 @@ final class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNU
 
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
+        registerNotificationCategories()
 
         application.registerForRemoteNotifications()
         return true
+    }
+
+    // Defines the "Взять в работу" button shown on lead notifications.
+    // .foreground brings the app forward so a Face ID check can run.
+    private func registerNotificationCategories() {
+        let takeAction = UNNotificationAction(
+            identifier: PushAction.takeInProgress,
+            title: "Взять в работу",
+            options: [.foreground],
+        )
+        let category = UNNotificationCategory(
+            identifier: PushAction.category,
+            actions: [takeAction],
+            intentIdentifiers: [],
+            options: [],
+        )
+        UNUserNotificationCenter.current().setNotificationCategories([category])
     }
 
     // MARK: - APNs token plumbing
@@ -55,14 +79,25 @@ final class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNU
         return [.banner, .sound, .badge]
     }
 
-    // Handle tap on notification: capture leadId for deep-link.
+    // Handles notification taps and the "Взять в работу" action button.
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 didReceive response: UNNotificationResponse) async {
         let userInfo = response.notification.request.content.userInfo
-        if let leadId = userInfo["leadId"] as? String {
-            await MainActor.run {
-                DeepLinkRouter.shared.pendingLeadId = leadId
+        guard let leadId = userInfo["leadId"] as? String else { return }
+
+        if response.actionIdentifier == PushAction.takeInProgress {
+            // The push button requires Face ID / passcode before changing the status.
+            let confirmed = await BiometricAuth.authenticate(
+                reason: "Подтвердите, чтобы взять заявку в работу",
+            )
+            if confirmed {
+                try? await LeadsRepository.shared.updateStatus(leadId: leadId, status: .inProgress)
             }
+        }
+
+        // Open the lead either way so the user sees the result.
+        await MainActor.run {
+            DeepLinkRouter.shared.pendingLeadId = leadId
         }
     }
 }

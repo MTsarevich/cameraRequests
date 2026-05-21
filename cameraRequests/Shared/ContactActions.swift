@@ -9,24 +9,13 @@ enum ContactActions {
         UIApplication.shared.open(url)
     }
 
-    // Opens a Telegram chat by phone number. Tries the tg:// app scheme first
-    // (opens the installed Telegram app directly); falls back to the t.me web
-    // link if Telegram isn't installed.
+    // Opens a Telegram chat by phone number via the t.me universal link.
+    // With Telegram installed iOS routes this straight into the app on the
+    // correct chat; without it, Safari shows the "open chat" page.
     static func openTelegram(phone: String) {
         let digits = PhoneFormatter.digitsOnly(phone)
-        guard !digits.isEmpty else { return }
-        let appURL = URL(string: "tg://resolve?phone=\(digits)")
-        let webURL = URL(string: "https://t.me/+\(digits)")
-
-        if let appURL {
-            UIApplication.shared.open(appURL) { opened in
-                if !opened, let webURL {
-                    UIApplication.shared.open(webURL)
-                }
-            }
-        } else if let webURL {
-            UIApplication.shared.open(webURL)
-        }
+        guard !digits.isEmpty, let url = URL(string: "https://t.me/+\(digits)") else { return }
+        UIApplication.shared.open(url)
     }
 
     static func openEmail(_ address: String) {

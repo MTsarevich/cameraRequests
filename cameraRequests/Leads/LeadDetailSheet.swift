@@ -7,6 +7,9 @@ struct LeadDetailSheet: View {
     @State private var pendingAction: PendingAction?
     @State private var errorMessage: String?
     @State private var isWorking = false
+    @State private var notes: [LeadNote] = []
+    @State private var newNote: String = ""
+    @State private var isAddingNote = false
 
     private enum PendingAction: Identifiable {
         case close, reopen
@@ -46,6 +49,9 @@ struct LeadDetailSheet: View {
                         Spacer()
                         StatusBadge(status: lead.status)
                     }
+                    if let assignee = lead.assignedToName, !assignee.isEmpty {
+                        infoRow("В работе у", assignee)
+                    }
                 }
 
                 if hasContact {
@@ -82,6 +88,8 @@ struct LeadDetailSheet: View {
                     }
                 }
 
+                notesSection
+
                 Section("Действия") {
                     if lead.status == .new {
                         Button {
@@ -116,6 +124,8 @@ struct LeadDetailSheet: View {
                 }
             }
             .overlay { if isWorking { ProgressView().controlSize(.large) } }
+            .onAppear { startNotesListener() }
+            .onDisappear { LeadsRepository.shared.stopNotes() }
             .confirmationDialog(
                 confirmationTitle,
                 isPresented: dialogBinding,
@@ -140,10 +150,46 @@ struct LeadDetailSheet: View {
         }
     }
 
+    // MARK: - Notes section
+
+    private var notesSection: some View {
+        Section("Заметки") {
+            if notes.isEmpty {
+                Text("Пока нет заметок")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+            ForEach(notes) { note in
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(note.text)
+                    Text("\(note.authorName) · \(noteDate(note.createdAt))")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.vertical, 2)
+            }
+            HStack(spacing: 8) {
+                TextField("Добавить заметку…", text: $newNote, axis: .vertical)
+                Button {
+                    addNote()
+                } label: {
+                    Image(systemName: "arrow.up.circle.fill")
+                        .font(.title2)
+                        .foregroundStyle(canAddNote ? Theme.brand : Theme.textSecondary.opacity(0.4))
+                }
+                .disabled(!canAddNote)
+            }
+        }
+    }
+
     // MARK: - Subviews
 
     private var hasContact: Bool {
         !lead.phone.isEmpty || (lead.email?.isEmpty == false)
+    }
+
+    private var canAddNote: Bool {
+        !newNote.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !isAddingNote
     }
 
     private func infoRow(_ title: String, _ value: String) -> some View {
@@ -207,7 +253,39 @@ struct LeadDetailSheet: View {
         }
     }
 
+    private func startNotesListener() {
+        guard let id = lead.id else { return }
+        LeadsRepository.shared.startListeningNotes(leadId: id) { fetched in
+            notes = fetched
+        }
+    }
+
+    private func addNote() {
+        guard let id = lead.id else { return }
+        let text = newNote.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { return }
+        isAddingNote = true
+        Task {
+            do {
+                try await LeadsRepository.shared.addNote(leadId: id, text: text)
+                newNote = ""
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+            isAddingNote = false
+        }
+    }
+
     private func formatted(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "ru_RU")
+        f.dateStyle = .short
+        f.timeStyle = .short
+        return f.string(from: date)
+    }
+
+    private func noteDate(_ date: Date?) -> String {
+        guard let date else { return "только что" }
         let f = DateFormatter()
         f.locale = Locale(identifier: "ru_RU")
         f.dateStyle = .short

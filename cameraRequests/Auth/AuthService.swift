@@ -8,6 +8,9 @@ final class AuthService {
     static let shared = AuthService()
 
     private(set) var currentUser: User?
+    // False until Firebase Auth reports its first state. Lets the UI show a
+    // launch screen instead of briefly flashing the sign-in screen.
+    private(set) var isResolved = false
     private var handle: AuthStateDidChangeListenerHandle?
 
     var isSignedIn: Bool { currentUser != nil }
@@ -18,6 +21,7 @@ final class AuthService {
         handle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
             Task { @MainActor in
                 self?.currentUser = user
+                self?.isResolved = true
             }
         }
     }

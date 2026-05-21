@@ -36,6 +36,8 @@ export async function sendLeadPush(
               sound: target.soundEnabled ? "default" : undefined,
               badge: notification.badge,
               "content-available": 1,
+              // Shows the "Взять в работу" action button on the notification.
+              category: "NEW_LEAD",
             },
           },
         },

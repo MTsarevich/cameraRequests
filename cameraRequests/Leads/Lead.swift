@@ -13,6 +13,7 @@ struct Lead: Identifiable, Codable, Equatable {
     var createdAt: Date?
     var updatedAt: Date?
     var assignedTo: String?
+    var assignedToName: String?
     var lastRemindedAt: Date?
     var reminderCount: Int?
 
@@ -30,6 +31,7 @@ struct Lead: Identifiable, Codable, Equatable {
             && lhs.email == rhs.email
             && lhs.message == rhs.message
             && lhs.status == rhs.status
+            && lhs.assignedToName == rhs.assignedToName
             && lhs.createdAt == rhs.createdAt
             && lhs.updatedAt == rhs.updatedAt
     }

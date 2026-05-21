@@ -17,7 +17,12 @@ final class LeadsListViewModel {
     }
 
     func filteredLeads() -> [Lead] {
-        let bySegment = allLeads.filter { $0.status == selectedStatus }
+        var bySegment = allLeads.filter { $0.status == selectedStatus }
+        // "Новые": oldest first, so the longest-waiting lead is handled first.
+        // Other tabs keep newest-first (the listener's default order).
+        if selectedStatus == .new {
+            bySegment.sort { ($0.createdAt ?? .distantPast) < ($1.createdAt ?? .distantPast) }
+        }
         let query = searchText.trimmingCharacters(in: .whitespaces).lowercased()
         guard !query.isEmpty else { return bySegment }
         return bySegment.filter { $0.searchableHaystack.contains(query) }

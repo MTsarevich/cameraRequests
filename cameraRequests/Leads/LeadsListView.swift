@@ -3,6 +3,9 @@ import SwiftUI
 struct LeadsListView: View {
     @State private var vm = LeadsListViewModel()
     @State private var presentedLead: Lead?
+    @State private var network = NetworkMonitor.shared
+    @State private var showStats = false
+    @State private var showSettings = false
     @EnvironmentObject private var router: DeepLinkRouter
 
     var body: some View {
@@ -11,6 +14,9 @@ struct LeadsListView: View {
                 Theme.background.ignoresSafeArea()
 
                 VStack(spacing: 0) {
+                    if !network.isOnline {
+                        offlineBanner
+                    }
                     statusPicker
                     listContent
                 }
@@ -18,14 +24,24 @@ struct LeadsListView: View {
             .navigationTitle("Заявки")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button { showStats = true } label: {
+                        Image(systemName: "chart.bar.fill")
+                            .foregroundStyle(Theme.brand)
+                    }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink {
-                        SettingsView()
-                    } label: {
+                    Button { showSettings = true } label: {
                         Image(systemName: "gearshape.fill")
                             .foregroundStyle(Theme.brand)
                     }
                 }
+            }
+            .navigationDestination(isPresented: $showStats) {
+                StatsView(leads: vm.allLeads)
+            }
+            .navigationDestination(isPresented: $showSettings) {
+                SettingsView()
             }
             .searchable(text: $vm.searchText, prompt: "Поиск по заявке")
             .onAppear { startListening() }
@@ -42,6 +58,18 @@ struct LeadsListView: View {
                 openIfPending(router.pendingLeadId)
             }
         }
+    }
+
+    private var offlineBanner: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "wifi.slash")
+            Text("Нет соединения")
+        }
+        .font(.caption.weight(.medium))
+        .foregroundStyle(.white)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 6)
+        .background(Theme.textSecondary)
     }
 
     private var statusPicker: some View {
@@ -73,6 +101,10 @@ struct LeadsListView: View {
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
+            .refreshable {
+                startListening()
+                try? await Task.sleep(for: .milliseconds(600))
+            }
         }
     }
 
@@ -144,6 +176,17 @@ private struct LeadRow: View {
                     .font(.footnote)
                     .foregroundStyle(Theme.textSecondary)
                     .lineLimit(1)
+            }
+
+            if lead.status == .inProgress, let assignee = lead.assignedToName, !assignee.isEmpty {
+                HStack(spacing: 6) {
+                    Image(systemName: "person.fill")
+                        .font(.caption2)
+                        .foregroundStyle(Theme.statusInProgress)
+                    Text(assignee)
+                        .font(.caption)
+                        .foregroundStyle(Theme.textSecondary)
+                }
             }
         }
         .padding(14)
